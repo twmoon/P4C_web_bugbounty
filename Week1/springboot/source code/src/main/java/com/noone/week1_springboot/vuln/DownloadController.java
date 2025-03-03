@@ -1,4 +1,4 @@
-package com.noone.week1_springboot;
+package com.noone.week1_springboot.vuln;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

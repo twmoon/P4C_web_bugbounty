@@ -23,4 +23,8 @@ public class UserService {
         String query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
         return entityManager.createNativeQuery(query, User.class).getResultList();
     }
+
+    public List<User> findByUsernameAndPasswordSafe(String username, String password) {
+        return userRepository.findByUsernameAndPassword(username, password);
+    }
 }

@@ -1,4 +1,4 @@
-package com.noone.week1_springboot;
+package com.noone.week1_springboot.vuln;
 
 import com.noone.week1_springboot.entity.User;
 import com.noone.week1_springboot.service.UserService;
