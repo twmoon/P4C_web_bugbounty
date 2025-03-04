@@ -22,7 +22,7 @@ public class DownloadController {
     @GetMapping("/file")
     public ResponseEntity<?> downloadFile(@RequestParam String file) {
         try {
-            // 경로 조작 방지: .. 등의 상위 디렉토리 참조 차단
+            // 경로 조작 방지
             if (file.contains("..")) {
                 return ResponseEntity.badRequest().body("Invalid file path.");
             }
@@ -31,7 +31,7 @@ public class DownloadController {
             Path basePath = Paths.get(BASE_DIR).normalize();
             Path filePath = basePath.resolve(file).normalize();
 
-            // 파일 경로가 BASE_DIR로 시작하는지 확인 (디렉토리 트래버설 방지)
+            // 파일 경로가 BASE_DIR로 시작하는지 확인
             if (!filePath.startsWith(basePath) || !Files.exists(filePath)) {
                 return ResponseEntity.badRequest().body("File not found or access denied.");
             }

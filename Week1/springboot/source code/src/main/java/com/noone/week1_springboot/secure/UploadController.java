@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/secure/upload")
 public class UploadController {
 
-    private final String UPLOAD_DIR = "src/main/resources/static/uploads/";
-    private final List<String> ALLOWED_EXTENSIONS = Arrays.asList("txt", "pdf", "jpg", "png");
+    private final String UPLOAD_DIR = "src/main/resources/static/uploads/"; //static에서 jsp 실행 불가
+    private final List<String> ALLOWED_EXTENSIONS = Arrays.asList("txt", "pdf", "jpg", "png"); //확장자 필터
 
     @PostMapping("/file")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -67,7 +67,7 @@ public class UploadController {
                 return ResponseEntity.badRequest().body("Invalid file path.");
             }
 
-            // 파일 경로 검증을 통한 디렉토리 트래버설 방지
+            // 파일 경로 검증을 통한 Path traversal 방지
             Path filePath = Paths.get(UPLOAD_DIR, file);
             if (!filePath.normalize().startsWith(Paths.get(UPLOAD_DIR))) {
                 return ResponseEntity.badRequest().body("Access denied.");

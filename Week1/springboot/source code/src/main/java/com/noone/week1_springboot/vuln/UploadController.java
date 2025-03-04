@@ -5,6 +5,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,12 +15,76 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.HashSet;
+import java.util.Set;
 
-@RestController
-@RequestMapping("/vuln/upload-file")
+@RestController("vulnUploadController")
+@RequestMapping("/vuln/upload")
 public class UploadController {
 
-    private final String UPLOAD_DIR = "src/main/resources/static/uploads/";
+    private final String UPLOAD_DIR = "src/main/webapp/uploads/";
+    private final String PRIVATE_DIR = UPLOAD_DIR + "private/";
+    private final String FLAG_FILE = PRIVATE_DIR + "upload.flag";
+    private final String FLAG_CONTENT = "flag{upload_is_fun}";
+
+    @Component
+    public class FlagInitializer implements CommandLineRunner {
+        @Override
+        public void run(String... args) throws Exception {
+            initializePrivateFlag();
+        }
+    }
+
+    private void initializePrivateFlag() {
+        try {
+            Path uploadPath = Paths.get(UPLOAD_DIR);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path privatePath = Paths.get(PRIVATE_DIR);
+            if (!Files.exists(privatePath)) {
+                Files.createDirectories(privatePath);
+            }
+
+            Path flagPath = Paths.get(FLAG_FILE);
+            if (!Files.exists(flagPath)) {
+                Files.write(flagPath, FLAG_CONTENT.getBytes());
+            }
+
+            if (isPosixCompliant()) {
+                Set<PosixFilePermission> ownerOnly = new HashSet<>();
+                ownerOnly.add(PosixFilePermission.OWNER_READ);
+                ownerOnly.add(PosixFilePermission.OWNER_WRITE);
+
+                Files.setPosixFilePermissions(privatePath, ownerOnly);
+                Files.setPosixFilePermissions(flagPath, ownerOnly);
+            } else {
+                File privateDir = privatePath.toFile();
+                File flagFile = flagPath.toFile();
+
+                privateDir.setReadable(true, true);
+                privateDir.setWritable(true, true);
+                privateDir.setExecutable(true, true);
+
+                flagFile.setReadable(true, true);
+                flagFile.setWritable(true, true);
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error" + e.getMessage());
+        }
+    }
+
+    private boolean isPosixCompliant() {
+        try {
+            return Files.getFileStore(Paths.get(".")).supportsFileAttributeView("posix");
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
     @PostMapping("/file")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -30,7 +96,6 @@ public class UploadController {
             }
 
             // 취약점: 파일 이름 검증이나 확장자 필터링 없이 그대로 저장
-            // 악성 .jsp, .php 등 파일 업로드 가능
             Path filePath = uploadPath.resolve(file.getOriginalFilename());
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
@@ -60,7 +125,7 @@ public class UploadController {
         }
     }
 
-    @GetMapping("")
+    @GetMapping("/form")
     public ResponseEntity<?> showUploadForm() {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)

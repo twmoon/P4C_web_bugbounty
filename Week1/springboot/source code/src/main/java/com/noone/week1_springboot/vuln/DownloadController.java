@@ -16,15 +16,18 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@RestController
+@RestController("vulnDownloadController")
 @RequestMapping("/vuln/download")
 public class DownloadController {
+
+    private final String BASE_DIR = "src/main/resources/downloads/";
 
     @GetMapping("/file")
     public ResponseEntity<?> downloadFile(@RequestParam String file) {
         try {
             // 적절한 필터링 없이 입력값을 그대로 받아서 path traversal 취약점 발생
-            File downloadFile = new File(file);
+            // 기본 디렉토리를 src/main/resources/downloads로 설정
+            File downloadFile = new File(BASE_DIR + file);
 
             if (!downloadFile.exists()) {
                 return ResponseEntity.badRequest().body("File not found.");

@@ -30,7 +30,7 @@ public class Week1SpringbootApplication {
                 writer.write("Try harder.. kkk");
             }
 
-            File realFlag = new File("download.flag");
+            File realFlag = new File("./src/main/download.flag");
             try (FileWriter writer = new FileWriter(realFlag)) {
                 writer.write("flag{download_is_fun}");
             }
