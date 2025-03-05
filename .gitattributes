@@ -1,0 +1,2 @@
+Week1 filter=lfs diff=lfs merge=lfs -text
+Week1/springboot/docker/week1_springboot-0.0.1-SNAPSHOT.war filter=lfs diff=lfs merge=lfs -text

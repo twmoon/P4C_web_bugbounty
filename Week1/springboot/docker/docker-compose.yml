@@ -1,31 +1,42 @@
 version: '3.9'
+
 services:
   app:
-    build:
-      context: .  
-      dockerfile: Dockerfile
+    build: .
     ports:
-      - "8080:8080" 
+      - "8080:8080"
     depends_on:
-      - db  
+      - mysql
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/vuln?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/vuln?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=1234
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
-    restart: unless-stopped
+    volumes:
+      - uploads_data:/app/src/main/webapp/uploads
+      - static_uploads:/app/src/main/resources/static/uploads
+      - downloads_data:/app/src/main/resources/downloads
+    restart: always
+    networks:
+      - spring-network
 
-  db:
+  mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: vuln
+      - MYSQL_DATABASE=vuln
+      - MYSQL_ROOT_PASSWORD=1234
     ports:
-      - "3306:3306" 
+      - "3307:3306"
     volumes:
-      - db-data:/var/lib/mysql
-    restart: unless-stopped
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spring-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 volumes:
-  db-data:
+  mysql_data:
+  uploads_data:
+  static_uploads:
+  downloads_data:
+
+networks:
+  spring-network:
