@@ -2,6 +2,8 @@ package com.noone.week1_springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,7 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 @SpringBootApplication
-public class Week1SpringbootApplication {
+public class Week1SpringbootApplication extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Week1SpringbootApplication.class);
+    }
 
     public static void main(String[] args) {
         createFlagsAndDirectories();
