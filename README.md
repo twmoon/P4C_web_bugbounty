@@ -9,3 +9,6 @@
 ## 연락처
 문태웅  
 이메일: jdk19990830@gmail.com  
+
+## 공부/과제 일정
+[일정관리](https://thoughtful-production-665.notion.site/1ac47843ccd080109df3e9f6a4928bd3)
